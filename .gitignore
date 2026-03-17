@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Devbox
+.devbox/
+
+# Django specific
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Secrets & Local Config
+.env
+.secrets
+
+# Docker logs
+*.log
+
+# OS generated files
+.DS_Store

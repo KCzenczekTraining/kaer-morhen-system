@@ -1,0 +1,12 @@
+[project]
+name = "kaer-morhen-system"
+version = "0.1.0"
+description = "Witcher Beast Tracking Microservices"
+readme = "README.md"
+requires-python = ">=3.12"
+
+#These are the dependencies/tools to use across the entire project
+dependencies = []
+
+[tool.uv]
+workspace = { members = ["services/*"] }
