@@ -1,0 +1,13 @@
+services:
+  bestiary:
+    build:
+      context: .
+      dockerfile: services/bestiary-service/Dockerfile
+    image: witcher-bestiary
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/bestiary-service:/app/services/bestiary-service
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DEBUG=True

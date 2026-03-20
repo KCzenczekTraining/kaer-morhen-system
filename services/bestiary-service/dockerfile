@@ -1,0 +1,41 @@
+# --- Stage 1: The Alchemist (Exporting) ---
+FROM python:3.12-slim AS builder
+
+# Grab the uv binary from its official image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Set the working directory to the project root
+WORKDIR /app
+
+# Copy the lockfiles to generate a requirements list
+COPY pyproject.toml uv.lock ./
+COPY services/bestiary-service/pyproject.toml ./services/bestiary-service/
+
+# Export the dependencies to a standard requirements.txt file
+# This flattens the workspace so Stage 2 can just install them normally
+RUN uv export --frozen --no-dev --package bestiary-service -o requirements.txt
+
+
+# --- Stage 2: The Witcher (Running) ---
+FROM python:3.12-slim
+WORKDIR /app
+
+# Copy the requirements.txt just made
+COPY --from=builder /app/requirements.txt .
+
+# Install the packages directly into this container's Python
+# No venv = no path headaches
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+# Copy the actual service code
+COPY services/bestiary-service/ /app/services/bestiary-service/
+
+# Set environment variables
+ENV PYTHONPATH="/app:/app/services/bestiary-service"
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app/services/bestiary-service
+EXPOSE 8000
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

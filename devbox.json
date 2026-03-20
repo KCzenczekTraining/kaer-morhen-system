@@ -3,7 +3,8 @@
   "packages": [
     "python@3.12",
     "uv@latest",
-    "docker-compose@latest"
+    "docker-compose@latest",
+    "tree@latest"
   ],
   "shell": {
     "init_hook": [

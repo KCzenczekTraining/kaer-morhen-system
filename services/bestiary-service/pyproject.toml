@@ -1,3 +1,5 @@
+# services/bestiary-service/pyproject.toml: Defines what the service needs (e.g., "I need Django")
+
 [project]
 name = "bestiary-service"
 version = "0.1.0"

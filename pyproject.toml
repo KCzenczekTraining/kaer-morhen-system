@@ -1,3 +1,6 @@
+# kaer-morhen-system/pyproject.toml: Defines where the services are (the "Members")
+# kaer-morhen-system/uv.lock: Defines the exact version of everything in the whole system
+
 [project]
 name = "kaer-morhen-system"
 version = "0.1.0"
