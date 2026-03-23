@@ -1,13 +1,32 @@
 services:
+  # The Database "Iron Mine"
+  db:
+    image: postgres:16-alpine
+    container_name: witcher_db
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # The Bestiary API
   bestiary:
     build:
       context: .
-      dockerfile: services/bestiary-service/Dockerfile
-    image: witcher-bestiary
-    ports:
-      - "8000:8000"
+      dockerfile: services/bestiary-service/dockerfile
     volumes:
       - ./services/bestiary-service:/app/services/bestiary-service
+    ports:
+      - "8000:8000"
     environment:
-      - PYTHONUNBUFFERED=1
-      - DEBUG=True
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - db
+
+# The Persistence Vault
+volumes:
+  postgres_data:
