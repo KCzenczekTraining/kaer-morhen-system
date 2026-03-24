@@ -1,17 +1,24 @@
 services:
-  # The Database "Iron Mine"
-  db:
+  # The Bestiary Database
+  bestiary_db:
     image: postgres:16-alpine
-    container_name: witcher_db
+    container_name: bestiary_db
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BESTIARY_USER} -d ${BESTIARY_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${BESTIARY_DB}
+      - POSTGRES_USER=${BESTIARY_USER}
+      - POSTGRES_PASSWORD=${BESTIARY_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - bestiary_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - witcher-link
 
   # The Bestiary API
   bestiary:
@@ -23,10 +30,56 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${BESTIARY_DATABASE_URL}
     depends_on:
-      - db
+      bestiary_db:
+        condition: service_healthy # Wait for the healthcheck to pass
+    networks:
+      - witcher-link
 
-# The Persistence Vault
+  # The Quest Database
+  quest_db:
+    image: postgres:16-alpine
+    container_name: quest_db
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${QUEST_USER} -d ${QUEST_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_DB=${QUEST_DB}
+      - POSTGRES_USER=${QUEST_USER}
+      - POSTGRES_PASSWORD=${QUEST_PASSWORD}
+    volumes:
+      - quest_data:/var/lib/postgresql/data
+    networks:
+      - witcher-link
+    ports:
+      - "5431:5432"  # Host 5431 -> Container 5432
+
+# The Quest API
+  quest-service:
+    build:
+      context: .
+      dockerfile: services/quest-service/Dockerfile
+    container_name: quest-service
+    volumes:
+      - ./services/quest-service:/app/services/quest-service
+    environment:
+      - DATABASE_URL=${QUEST_DATABASE_URL}
+    ports:
+      - "8001:8000" # Bestiary is 8000, Quest is 8001
+    depends_on:
+      quest_db:
+        condition: service_healthy # Wait for the healthcheck to pass
+    networks:
+      - witcher-link
+
+networks:
+  witcher-link:
+    driver: bridge
+
 volumes:
-  postgres_data:
+  bestiary_data:
+  quest_data:

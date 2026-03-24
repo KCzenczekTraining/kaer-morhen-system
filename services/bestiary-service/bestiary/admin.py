@@ -3,14 +3,17 @@ from .models import Monster
 
 @admin.register(Monster)
 class MonsterAdmin(admin.ModelAdmin):
-    # 'category' matches your model field
-    # We removed 'created_at' because it's not in your model
-    list_display = ('name', 'category', 'danger_level')
+    ## Added 'created_at' and 'slug' to the display
+    list_display = ('name', 'category', 'danger_level', 'created_at')
 
-    # This adds the filter sidebar using the CATEGORIES choices
+    # Keep your filters
     list_filter = ('category', 'danger_level')
 
-    # This allows you to search by name or weakness
-    search_fields = ('name', 'description', 'weakness')
+    # Added 'weakness_sign' and 'oil_type' to search since we split the fields
+    search_fields = ('name', 'description', 'weakness_sign', 'oil_type')
 
     list_display_links = ('name',)
+
+    # ⚔️ WITCHER TRICK: This automatically fills the slug as you type the name
+    # e.g. Typing "Foglet" automatically fills "foglet" in the slug field
+    prepopulated_fields = {'slug': ('name',)}
