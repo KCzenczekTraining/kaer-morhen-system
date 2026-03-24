@@ -8,4 +8,4 @@ from .serializers import MonsterSerializer
 class MonsterViewSet(viewsets.ModelViewSet):
     queryset = Monster.objects.all()
     serializer_class = MonsterSerializer
-    # This single class handles GET (list), POST (create), GET (detail), etc.
+    lookup_field = 'slug'

@@ -4,4 +4,5 @@ from .models import Monster
 class MonsterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Monster
-        fields = ['id', 'name', 'category', 'description', 'weakness', 'danger_level']
+        # Include 'slug' so the services can match records correctly
+        fields = ['id', 'name', 'slug', 'category', 'description', 'weakness', 'danger_level']
